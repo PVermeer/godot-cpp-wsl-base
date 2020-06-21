@@ -140,7 +140,7 @@ elif env['platform'] == "windows":
             env.Append(CPPDEFINES=['NDEBUG'])
 
         # Append .dll to target_name
-        env['target_name'] += '-' + env['bits'] + '.dll'
+        env['target_name'] += '.dll'
 
     else:
         env.Append(CCFLAGS=['-DWIN32', '-D_WIN32', '-D_WINDOWS',

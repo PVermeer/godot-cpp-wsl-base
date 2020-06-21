@@ -8,13 +8,13 @@ reloadable=true
 [entry]
 
 X11.64="res://bin/cpp-library/x11/lib-godot-cpp.so"
-Windows.64="res://bin/cpp-library/win64/lib-godot-cpp-64.dll"
-Windows.32="res://bin/cpp-library/win32/lib-godot-cpp-64.dll"
+Windows.64="res://bin/cpp-library/win64/lib-godot-cpp.dll"
 OSX.64="res://bin/cpp-library/osx/lib-godot-cpp.dylib"
+Server="res://bin/cpp-library/x11/lib-godot-cpp.so"
 
 [dependencies]
 
-X11.64=[  ]
-Windows.64=[  ]
-Windows.32=[  ]
-OSX.64=[  ]
+X11.64=[ ]
+Windows.64=[ ]
+Windows.32=[ ]
+OSX.64=[ ]
