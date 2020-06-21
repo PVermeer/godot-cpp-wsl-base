@@ -19,7 +19,7 @@ opts.Add(EnumVariable('p', "Compilation target, alias for 'platform'",
                       '', ['', 'windows', 'x11', 'linux', 'osx']))
 opts.Add(BoolVariable('use_llvm', "Use the LLVM / Clang compiler", 'no'))
 opts.Add(PathVariable('target_path',
-                      'The path where the lib is installed.', 'demo/bin/'))
+                      'The path where the lib is installed.', 'bin/cpp-library/'))
 opts.Add(PathVariable('target_name', 'The library name.',
                       'lib-godot-cpp', PathVariable.PathAccept))
 
@@ -38,8 +38,8 @@ else:
     )
 
 # Local dependency paths, adapt them to your setup
-godot_headers_path = "godot-cpp/godot_headers/"
-cpp_bindings_path = "godot-cpp/"
+godot_headers_path = "godot-cpp-src/godot-cpp/godot_headers/"
+cpp_bindings_path = "godot-cpp-src/godot-cpp/"
 cpp_library = "libgodot-cpp"
 
 # Updates the environment with the option variables.
@@ -164,8 +164,14 @@ env.Append(LIBPATH=[cpp_bindings_path + 'bin/'])
 env.Append(LIBS=[cpp_library])
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
-env.Append(CPPPATH=['src/'])
-sources = Glob('src/*.cpp')
+env.Append(CPPPATH=['src/cpp/'])
+sources = Glob('src/cpp/*.cpp')
+sources.extend(Glob('src/cpp/*/*.cpp'))
+sources.extend(Glob('src/cpp/*/*/*.cpp'))
+sources.extend(Glob('src/cpp/*/*/*/*.cpp'))
+sources.extend(Glob('src/cpp/*/*/*/*/*.cpp'))
+sources.extend(Glob('src/cpp/*/*/*/*/*/*.cpp'))
+sources.extend(Glob('src/cpp/*/*/*/*/*/*/*.cpp'))
 
 library = env.SharedLibrary(
     target=env['target_path'] + env['target_name'], source=sources)
