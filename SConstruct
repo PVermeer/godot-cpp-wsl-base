@@ -1,7 +1,6 @@
 #!python
 # pylint: disable=undefined-variable
 import os
-import subprocess
 import sys
 
 opts = Variables([], ARGUMENTS)
@@ -126,8 +125,13 @@ elif env['platform'] == "windows":
             env['RANLIB'] = "i686-w64-mingw32-ranlib"
             env['LINK'] = "i686-w64-mingw32-g++"
 
-        env.Append(CCFLAGS=['-g', '-O3', '-std=c++14', '-Wwrite-strings'])
-        env.Append(LINKFLAGS=['--static'])
+        env.Append(CCFLAGS=['-g', '-O3', '-std=c++17', '-Wwrite-strings'])
+        env.Append(LINKFLAGS=[
+            '--static',
+            '-Wl,--no-undefined',
+            '-static-libgcc',
+            '-static-libstdc++',
+        ])
 
         if env['target'] in ('debug', 'd'):
             env.Append(CPPDEFINES=['_DEBUG'])
@@ -153,7 +157,7 @@ else:
 
 cpp_library += '.' + str(bits)
 
-# make sure our binding library is properly includes
+# make sure our binding library is properly included
 env.Append(CPPPATH=['.', godot_headers_path, cpp_bindings_path + 'include/',
                     cpp_bindings_path + 'include/core/', cpp_bindings_path + 'include/gen/'])
 env.Append(LIBPATH=[cpp_bindings_path + 'bin/'])
