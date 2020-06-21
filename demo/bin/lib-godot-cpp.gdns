@@ -1,8 +1,8 @@
 [gd_resource type="NativeScript" load_steps=2 format=2]
 
-[ext_resource path="res://bin/gdexample.gdnlib" type="GDNativeLibrary" id=1]
+[ext_resource path="res://bin/lib-godot-cpp.gdnlib" type="GDNativeLibrary" id=1]
 
 [resource]
-resource_name = "gdexample"
+resource_name = "lib-godot-cpp"
 class_name = "GDExample"
 library = ExtResource( 1 )

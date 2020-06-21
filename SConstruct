@@ -22,7 +22,7 @@ opts.Add(BoolVariable('use_llvm', "Use the LLVM / Clang compiler", 'no'))
 opts.Add(PathVariable('target_path',
                       'The path where the lib is installed.', 'demo/bin/'))
 opts.Add(PathVariable('target_name', 'The library name.',
-                      'libgdexample', PathVariable.PathAccept))
+                      'lib-godot-cpp', PathVariable.PathAccept))
 
 # Try to detect the host platform automatically.
 # This is used if no `platform` argument is passed
@@ -103,8 +103,18 @@ elif env['platform'] in ('x11', 'linux'):
         env.Append(CCFLAGS=['-g', '-O3'])
 
 elif env['platform'] == "windows":
+    if env['bits'] == '64':
+        env['target_path'] += 'win64/'
+    else:
+        env['target_path'] += 'win32/'
+
+    cpp_library += '.windows'
+    # This makes sure to keep the session environment variables on windows,
+    # that way you can run scons in a vs 2017 prompt and it will find all the required tools
+    env.Append(ENV=os.environ)
+
+    # Cross-compilation using MinGW (tested in WSL)
     if host_platform == 'linux' or host_platform == 'osx':
-        # Cross-compilation using MinGW
         if env['bits'] == '64':
             env['CXX'] = 'x86_64-w64-mingw32-g++'
             env['AR'] = "x86_64-w64-mingw32-ar"
@@ -116,23 +126,25 @@ elif env['platform'] == "windows":
             env['RANLIB'] = "i686-w64-mingw32-ranlib"
             env['LINK'] = "i686-w64-mingw32-g++"
 
-    if env['bits'] == '64':
-        env['target_path'] += 'win64/'
-    else:
-        env['target_path'] += 'win32/'
+        env.Append(CCFLAGS=['-g', '-O3', '-std=c++14', '-Wwrite-strings'])
+        env.Append(LINKFLAGS=['--static'])
 
-    cpp_library += '.windows'
-    # This makes sure to keep the session environment variables on windows,
-    # that way you can run scons in a vs 2017 prompt and it will find all the required tools
-    env.Append(ENV=os.environ)
-    env.Append(CCFLAGS=['-g', '-O3', '-std=c++14', '-Wwrite-strings'])
-    env.Append(LINKFLAGS=['--static'])
+        if env['target'] in ('debug', 'd'):
+            env.Append(CPPDEFINES=['_DEBUG'])
+            env.Append(LINKFLAGS=['-DEBUG'])
+        else:
+            env.Append(CPPDEFINES=['NDEBUG'])
 
-    if env['target'] in ('debug', 'd'):
-        env.Append(CPPDEFINES=['_DEBUG'])
-        env.Append(LINKFLAGS=['-DEBUG'])
+        # Append .dll to target_name
+        env['target_name'] += '-' + env['bits'] + '.dll'
+
     else:
-        env.Append(CPPDEFINES=['NDEBUG'])
+        env.Append(CCFLAGS=['-DWIN32', '-D_WIN32', '-D_WINDOWS',
+                            '-W3', '-GR', '-D_CRT_SECURE_NO_WARNINGS'])
+        if env['target'] in ('debug', 'd'):
+            env.Append(CCFLAGS=['-EHsc', '-D_DEBUG', '-MDd'])
+        else:
+            env.Append(CCFLAGS=['-O2', '-EHsc', '-DNDEBUG', '-MD'])
 
 if env['target'] in ('debug', 'd'):
     cpp_library += '.debug'
